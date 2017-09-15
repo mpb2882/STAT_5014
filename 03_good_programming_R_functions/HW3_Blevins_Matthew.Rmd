@@ -1,0 +1,35 @@
+---
+title: "HW3_Blevins_Matthew"
+author: "Matthew Blevins"
+date: "September 15, 2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Problem 1
+I successfully completed the swirl lessons and installed the Exploratory Data Analysis courses.
+
+# Problem 2
+
+
+# Problem 3
+
+
+# Problem 4
+
+
+# Problem 5
+
+
+# Problem 6
+
+
+# Problem 7
+
+
+# Problem 8
+
+
+# Problem 9

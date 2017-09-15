@@ -1,0 +1,128 @@
+---
+title: "HW2_Blevins_Matthew"
+author: "Matthew Blevins"
+date: "September 10, 2017"
+output:
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F)
+library(dplyr)
+library(tidyr)
+library(swirl)
+```
+# Problems 1-3
+
+I successfully completed problems 1-3 to begin this assignment and create the file in the correct location.
+
+# Problem 4
+
+There are several valuable uses to utilizing version control in the classroom.  It allows others to work with existing code without getting rid of the original code.  This could be very useful in showing students what happens if certain things are changed.  It could also be very useful in working on group assignments because it provides a way for others to edit the code while still being able to revert to the original code if a bug is introduced.
+
+
+# Problem 5
+
+The code from problem 5 and 7 came from the solution posted on Dr. Settlage's github repository.  
+
+``` {r, echo=F}
+  #load the dataset
+  #Sensory Table
+url5a<-"http://www2.isye.gatech.edu/~jeffwu/wuhamadabook/data/Sensory.dat"
+Sensory_raw<-read.table(url5a, header=F, skip=1, fill=T, stringsAsFactors = F)
+    Sensory_tidy<-Sensory_raw[-1,]
+    Sensory_tidy_a<-filter(.data = Sensory_tidy,V1 %in% 1:10) %>%
+                    rename(Item=V1,V1=V2,V2=V3,V3=V4,V4=V5,V5=V6)
+    Sensory_tidy_b<-filter(.data = Sensory_tidy,!(V1 %in% 1:10)) %>%
+                    mutate(Item=rep(as.character(1:10),each=2)) %>%
+                    mutate(V1=as.numeric(V1)) %>%
+                    select(c(Item,V1:V5))
+    Sensory_tidy<-bind_rows(Sensory_tidy_a,Sensory_tidy_b)
+    colnames(Sensory_tidy)<-c("Item",paste("Person",1:5,sep="_"))
+    Sensory_tidy<-Sensory_tidy %>%  
+        gather(Person,value,Person_1:Person_5) %>%  
+        mutate(Person = gsub("Person_","",Person)) %>%
+        arrange(Item)
+ knitr::kable(summary(Sensory_tidy), caption="Sensory data summary")
+
+  #Long Jump Table
+url5b<-"http://www2.isye.gatech.edu/~jeffwu/wuhamadabook/data/LongJumpData.dat"
+LongJump_raw<-read.table(url5b, header=F, skip=1, fill=T, stringsAsFactors = F)
+    colnames(LongJump_raw)<-rep(c("V1","V2"),4)
+    LongJump_tidy<-rbind(LongJump_raw[,1:2],LongJump_raw[,3:4],
+                             LongJump_raw[,5:6],LongJump_raw[,7:8])
+    LongJump_tidy<-LongJump_tidy %>%  
+        filter(!(is.na(V1))) %>%
+        mutate(YearCode=V1, Year=V1+1900, dist=V2) %>%
+        select(-V1,-V2)
+knitr::kable(summary(LongJump_tidy), caption="Long Jump data summary")
+    
+  #Brain and Body Weight Table
+url5c<-"http://www2.isye.gatech.edu/~jeffwu/wuhamadabook/data/BrainandBodyWeight.dat"
+BrainBody_raw<-read.table(url5c, header=F, skip=1, fill=T, stringsAsFactors = F)
+    colnames(BrainBody_raw)<-rep(c("Brain","Body"),3)
+    BrainBody_tidy<-rbind(BrainBody_raw[,1:2],BrainBody_raw[,3:4],
+                             BrainBody_raw[,5:6])
+    BrainBody_tidy<-BrainBody_tidy %>%  
+        filter(!(is.na(Brain)))
+ knitr::kable(summary(BrainBody_tidy), caption="Brain/Body weight data summary")
+
+ #Tomato Table
+url5d<-"http://www2.isye.gatech.edu/~jeffwu/wuhamadabook/data/tomato.dat"
+Tomato_raw<-read.table(url5d, header=F, skip=2, fill=T, stringsAsFactors = F, comment.char = "")
+    Tomato_tidy<-Tomato_raw %>%  
+        separate(V2,into=paste("C10000",1:3,sep="_"),sep=",",remove=T, extra="merge") %>%
+        separate(V3,into=paste("C20000",1:3,sep="_"),sep=",",remove=T, extra="merge") %>%
+        separate(V4,into=paste("C30000",1:3,sep="_"),sep=",",remove=T, extra="merge") %>%
+        mutate(C10000_3=gsub(",","",C10000_3)) %>%
+        gather(Clone,value,C10000_1:C30000_3) %>%
+        mutate(Variety=V1, Clone=gsub("C","",Clone)) %>%
+        mutate(Variety=gsub("\\\\#"," ",Variety)) %>%
+        separate(Clone,into = c("Clone","Replicate")) %>%
+        select(-V1,Variety,Clone,value) %>%
+        arrange(Variety) 
+knitr::kable(summary(Tomato_tidy), caption="Tomato data summary")
+
+```
+
+# Problem 6
+
+``` {r, echo=F}
+# Path to data
+.datapath <- file.path(path.package('swirl'), 'Courses', 'R_Programming_E', 'Looking_at_Data','plant-data.txt')
+# Read in data
+plants <- read.csv(.datapath, strip.white=TRUE, na.strings="")
+
+# Remove annoying columns
+.cols2rm <- c('Accepted.Symbol', 'Synonym.Symbol')
+plants <- plants[, !(names(plants) %in% .cols2rm)]
+
+# Make names pretty
+names(plants) <- c('Scientific_Name', 'Duration', 'Active_Growth_Period', 'Foliage_Color', 'pH_Min', 'pH_Max', 'Precip_Min', 'Precip_Max', 'Shade_Tolerance', 'Temp_Min_F')
+
+knitr::kable(summary(plants), caption="Plants Tidy Data")
+
+```
+
+
+# Problem 7
+
+``` {r, echo=F}
+Car_Gebreken_raw <- file.path("C:", "Users", "Matthew Blevins", "Documents", "Open_Data_RDW__Gebreken.csv")
+    Car_Geconstat_raw <-file.path("C:", "Users", "Matthew Blevins", "Documents", "Open_Data_RDW__Geconstateerde_Gebreken.csv")
+    Car_Person_raw <- file.path("C:", "Users", "Matthew Blevins", "Documents","Personenauto_basisdata.csv")
+    
+    Car_Gebreken_raw.colclass <- sapply(Car_Gebreken_raw,class)
+    Car_Geconstat_raw.colclass <- sapply(Car_Geconstat_raw,class)
+    Car_Person_raw.colclass <- sapply(Car_Person_raw,class)
+    
+    print("Gebreken")
+    print(Car_Gebreken_raw.colclass)
+
+    print("Geconstat")
+    print(Car_Geconstat_raw.colclass)
+
+    print("Personen")
+    print(Car_Person_raw.colclass)
+```
+
