@@ -2,34 +2,108 @@
 title: "HW3_Blevins_Matthew"
 author: "Matthew Blevins"
 date: "September 15, 2017"
-output: pdf_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(tidyr)
 ```
 # Problem 1
 I successfully completed the swirl lessons and installed the Exploratory Data Analysis courses.
 
 # Problem 2
-
+If you are reading this, then the file was successfully created and pushed to my github repository.
 
 # Problem 3
-
+There are several things that I took away from the two style guides from the lecture.  Firstly, it shows that there are still some style suggestions that are either controversial or being updated over time.  This means that one should note the style other collaborators have been using if they are jumping into the middle of a project.  The style guides also provide some nice tips for those who are just getting into coding to help keep things neat and tidy.  It can be intimidating to begin coding for the first time, so it certainly helps to maintain a uniform style that makes things easier to read.  Similarly to writing, everyone is going to develop their own style of coding, but there are still some basic rules that everyone should follow for simplicity's sake.  Some of the things that I will do specifically are to make sure that I am indenting appropriately so that the code is more readable, using appropriate spacing in my code, and avoiding the use of underscores in identifiers.  
 
 # Problem 4
+When using lintr, I received a lot of comments about spacing.  It told me to use spaces around my operators instead of typing them all together.  I had been writing them all together previously, but it does make the code more readable when there are spaces around them.
 
 
 # Problem 5
+``` {r, echo=F}
+rds <- readRDS("HW3_data.rds")
+rds.t <- arrange(rds, Observer)
+dev1.means  <- data.frame()
+dev2.means  <- data.frame()
+dev1.sd     <- data.frame()
+dev2.sd     <- data.frame()
+dev12.cor   <- data.frame()
 
+#Set a repeating loop for 1:13
+for(i in 1:13){
+    #Calculate the mean for each Observer using i
+    mean1  <- mean(filter(rds, Observer==i)[, 'dev1'])
+    mean2  <- mean(filter(rds, Observer==i)[, 'dev2'])
+    
+    #Calculate the standard deviations using i
+    dev1sd    <-   sd(filter(rds, Observer==i)[, 'dev1'])
+    dev2sd    <-   sd(filter(rds, Observer==i)[, 'dev2'])
+    
+    #Calculate the correlations
+    correlate <-  cor(filter(rds, Observer==i)[, 'dev1'], 
+                   filter(rds, Observer==i)[, 'dev2'])
+    
+    #Tie the calculations to a variable
+    dev1.means  <- rbind(dev1.means, mean1)
+    dev2.means <- rbind(dev2.means, mean2)
+    
+    dev1.sd     <- rbind(dev1.sd, dev1sd)
+    dev2.sd     <- rbind(dev2.sd, dev2sd)
+    
+    dev12.cor <- rbind(dev12.cor, correlate)
+}
+
+
+devData <- cbind(1:13,dev1.means, dev2.means, dev1.sd, dev2.sd, dev12.cor)
+colnames(devData) <- c('Observer','Dev1 Average','Dev2 Average', 'Dev1 SD', 'Dev2 SD', 'Correlation')
+knitr::kable(devData, caption = "Means, Standard Dev., and Correlation for dev1 and dev2.")
+
+par(mfrow=c(1,2))
+boxplot(dev1.means, main="Dev1 Averages")
+boxplot(dev2.means, main="Dev2 Averages")
+```
 
 # Problem 6
+``` {r, echo=F}
+Blood_Pres <- read.table(
+  'http://www2.isye.gatech.edu/~jeffwu/wuhamadabook/data/BloodPressure.dat', skip =2) 
 
+```
 
 # Problem 7
+``` {r, echo=F}
+newton <- function(f, tol=1E-18, x0=1, N=20) {
+    h <- 0.001
+    i <- 1
+    x1 <- x0
+    p <- numeric(N)
+    
+    while(i<=N) {
+        df.dx <- (f(x0+h)-f(x0))/h
+        x1 <- (x0 - (f(x0)/df.dx))
+        p[i] <- x1
+        i <- i + 1
+        if (abs(x1-x0) < tol) break
+        x0 <- x1
+    }
+            return(p[1:(i+1)])
+}
 
+f <- function(x){(3^x)-sin(x)+cos(x*5)}
+b <- newton(f, x0=0, N=10)
+b
+```
 
 # Problem 8
+``` {r, echo=F}
 
+```
 
 # Problem 9
+This step is complete!
