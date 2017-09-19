@@ -11,6 +11,9 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(tidyr)
+library(ggplot2)
+library(vioplot)
+library(tidyverse)
 ```
 # Problem 1
 I successfully completed the swirl lessons and installed the Exploratory Data Analysis courses.
@@ -59,20 +62,46 @@ for(i in 1:13){
     dev12.cor <- rbind(dev12.cor, correlate)
 }
 
-
+#Create a table of all the data using knitr
 devData <- cbind(1:13,dev1.means, dev2.means, dev1.sd, dev2.sd, dev12.cor)
 colnames(devData) <- c('Observer','Dev1 Average','Dev2 Average', 'Dev1 SD', 'Dev2 SD', 'Correlation')
-knitr::kable(devData, caption = "Means, Standard Dev., and Correlation for dev1 and dev2.")
+knitr::kable(devData, caption = "Means, Standard Dev., and Correlation for Devs.")
 
+
+#Set up two boxplots beside each other
 par(mfrow=c(1,2))
 boxplot(dev1.means, main="Dev1 Averages")
 boxplot(dev2.means, main="Dev2 Averages")
+
+#Set up a violin plot
+violinPlot <-  ggplot(devData, aes(x = dev1.sd, y= dev2.sd))
+violinPlot + geom_violin()
 ```
 
 # Problem 6
 ``` {r, echo=F}
-Blood_Pres <- read.table(
+library(dplyr)
+bloodPressure <- read.table(
   'http://www2.isye.gatech.edu/~jeffwu/wuhamadabook/data/BloodPressure.dat', skip =2) 
+
+#Change the names to something that makes sense regarding the data
+colnames(bloodPressure)=c("Patient", "Morning1", "Afternoon1", "Evening1", "Patient", "Morning2", "Afternoon2", "Evening2")
+
+#Combine second set of data to the first set
+bloodPressure <- as.tibble(bloodPressure[, -5])
+bloodPressureTidy <- cbind(c(bloodPressure$Morning1, bloodPressure$Afternoon1, bloodPressure$Evening1, bloodPressure$Morning2, bloodPressure$Afternoon2, bloodPressure$Evening2))
+
+
+Patient <- as_tibble(rep(c(1:15), times=6))
+measurementTime <- as_tibble(rep(c("Morning 1", "Afternoon 1", "Evening 1", "Morning 2", "Afternoon 2", "Evening 2"), each = 15))
+
+bloodPressureFinal <- cbind(Patient, measurementTime, bloodPressureTidy)
+colnames(bloodPressureFinal) <- c("Patient", "Measurement Time", "Blood Pressure")
+
+
+invisible(as_tibble(bloodPressureFinal))
+invisible(bloodPressureByPatient <- arrange(bloodPressureFinal, Patient))
+knitr::kable(bloodPressureByPatient[1:90, ], caption = "Blood Pressure by Patient and Measurement Time")
 
 ```
 
@@ -96,13 +125,32 @@ newton <- function(f, tol=1E-18, x0=1, N=20) {
 }
 
 f <- function(x){(3^x)-sin(x)+cos(x*5)}
-b <- newton(f, x0=0, N=10)
+b <- newton(f, x0=0, N=5)
 b
 ```
 
 # Problem 8
 ``` {r, echo=F}
+# Load the data
+Car_Gebreken_raw <- file.path("C:", "Users", "Matthew Blevins", "Documents", "Open_Data_RDW__Gebreken.csv")
+    Car_Geconstat_raw <-file.path("C:", "Users", "Matthew Blevins", "Documents", "Open_Data_RDW__Geconstateerde_Gebreken.csv")
+    Car_Person_raw <- file.path("C:", "Users", "Matthew Blevins", "Documents","Personenauto_basisdata.csv")
+    
+    Car_Gebreken_raw.colclass <- sapply(Car_Gebreken_raw,class)
+    Car_Geconstat_raw.colclass <- sapply(Car_Geconstat_raw,class)
+    Car_Person_raw.colclass <- sapply(Car_Person_raw,class)
+    
+#Print the data
+    print("Gebreken")
+    print(Car_Gebreken_raw.colclass)
 
+    print("Geconstat")
+    print(Car_Geconstat_raw.colclass)
+
+    print("Personen")
+    print(Car_Person_raw.colclass)
+    
+#Beyond loading the data, I'm really not sure what to do for this question.
 ```
 
 # Problem 9
