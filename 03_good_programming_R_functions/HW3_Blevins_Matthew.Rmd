@@ -14,6 +14,7 @@ library(tidyr)
 library(ggplot2)
 library(vioplot)
 library(tidyverse)
+library(data.table)
 ```
 # Problem 1
 I successfully completed the swirl lessons and installed the Exploratory Data Analysis courses.
@@ -131,26 +132,31 @@ b
 
 # Problem 8
 ``` {r, echo=F}
+library(data.table)
 # Load the data
-Car_Gebreken_raw <- file.path("C:", "Users", "Matthew Blevins", "Documents", "Open_Data_RDW__Gebreken.csv")
-    Car_Geconstat_raw <-file.path("C:", "Users", "Matthew Blevins", "Documents", "Open_Data_RDW__Geconstateerde_Gebreken.csv")
-    Car_Person_raw <- file.path("C:", "Users", "Matthew Blevins", "Documents","Personenauto_basisdata.csv")
-    
-    Car_Gebreken_raw.colclass <- sapply(Car_Gebreken_raw,class)
-    Car_Geconstat_raw.colclass <- sapply(Car_Geconstat_raw,class)
-    Car_Person_raw.colclass <- sapply(Car_Person_raw,class)
-    
-#Print the data
-    print("Gebreken")
-    print(Car_Gebreken_raw.colclass)
 
-    print("Geconstat")
-    print(Car_Geconstat_raw.colclass)
+PersonData <- fread("C:/Users/Matthew Blevins/Documents/PersonData.csv")
+GecData <- fread("C:/Users/Matthew Blevins/Documents/GecData.csv")
+GebrekenData <- fread("C:/Users/Matthew Blevins/Documents/GebrekenData.csv")
 
-    print("Personen")
-    print(Car_Person_raw.colclass)
+
+#Merge the datasets, first by license plate then by defect code
+    licensePlate <- merge(PersonData, GecData, by = "Kenteken")
+    defectCode <- merge(licensePlate, GebrekenData, by = "Gebrek identificatie")
     
-#Beyond loading the data, I'm really not sure what to do for this question.
+#Change the names of the columns to something I can understand
+    defectsData <- defectCode[, c(1, 2, 4, 5, 16, 24)]
+    colnames(defectsData) <- c("Defect Code", "License", "Make", "Model", "Inspection Date", "Defect Description")
+    
+#Check for NA
+    checkForNA <- sum(is.na(defectsData$'Defect Code'))
+    
+#Examine only the year 2017 per the question
+    defects2017 <- defectsData[grep("2017", defectsData$"Inspection Date"),]
+    distinctMakes <- length(unique(defects2017$Make))
+    distinctModels <- length(unique(defects2017$Model))
+    
+    knitr::kable(as.data.frame(cbind(distinctMakes, distinctModels)), caption = "Total Number of Distinct Makes and Models")
 ```
 
 # Problem 9
