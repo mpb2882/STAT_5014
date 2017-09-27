@@ -1,0 +1,103 @@
+---
+title: "HW4"
+author: "Matthew Blevins"
+date: "September 21, 2017"
+output: pdf_document
+---
+
+```{r setup, echo=F}
+invisible(library(knitr))
+invisible(library(dplyr))
+invisible(library(tidyr))
+```
+# Problem 1
+I successfully completed the swirl lessons.
+
+
+# Problem 2
+I successfully made this file and put it in the correct location if you are reading this.
+
+
+# Problem 3
+Roger Peng provides many reasons for examples to demonstrate the importance of exploratory data analysis.  He states that it helps researchers identify the important pieces of information that might be worth further investigating, and he compares the process to film editors making the first cuts of their films.  A few of the goals he describes are to examine the validity of the stated hypothesis, determine any issues with the data gathered, assess whether the amount of collected data needs to be increased, and to determine relationships between variables that may be intriguing or surprising.
+
+
+# Problem 4
+
+```{r, echo=F}
+library(readxl)
+library(data.table)
+library(lattice)
+library(hexbin)
+
+#Create the Data Frames
+depthSummaries <- data.frame()
+phosphateSummaries <- data.frame()
+correlationData <-data.frame()
+
+
+#Load the Data
+prob4Data <- read_excel("HW4_data1.xlsx")
+
+#Make a vector for the summary statistics table
+block <- c(rep(1, 6), rep(2, 6), rep(3, 6), rep(4, 6), rep(5, 6), rep(6, 6), rep(7, 6), rep(8, 6), rep(9, 6), rep(10, 6), rep(11, 6), rep(12, 6), rep(13, 6))
+
+
+#Create a loop to summarize each block of data
+
+for(i in 1:13){
+    #Calculate the summary statistics for each Observer using i
+    summaryDepth  <- summary(filter(prob4Data, block==i)[, 'depth'])
+    summaryPhosphate  <- summary(filter(prob4Data, block==i)[, 'phosphate'])
+
+    #Calculate the correlations for each 
+    correlate  <- cor(filter(prob4Data, block==i)[, 'depth'], 
+                        (filter(prob4Data, block==i)[, 'phosphate']))
+    
+    #Save the summaries to a variable
+    depthSummaries <- rbind(depthSummaries, summaryDepth)
+    phosphateSummaries <- rbind(phosphateSummaries, summaryPhosphate)
+    
+    #Save the correlation data so that it can be plotted
+    correlationData<- rbind(correlationData, correlate)
+    
+    
+
+}
+
+
+
+    #Plot scatterplots for the entire data set
+    plot(prob4Data$block, prob4Data$depth)
+    plot(prob4Data$block, prob4Data$phosphate)
+
+#Create a table of the summary statistics, sorted by block
+summarizedData <- cbind(block, depthSummaries, phosphateSummaries)
+colnames(summarizedData) <- c('Block', '', 'Depth', 'Value', '', 'Phosphate', 'Value')
+knitr::kable(summarizedData, caption="Summary Statistics")
+
+#Create a correlation data table
+correlationDataFinal <- cbind(block, correlationData)
+colnames(correlationDataFinal) <- c('Block', 'Correlation')
+knitr::kable(correlationDataFinal, caption='Correlation')
+
+#Compare the depth and phosphate with a scatterplot
+plot(prob4Data$depth, prob4Data$phosphate, xlab = 'Depth', ylab = 'Phosphate', main = 'All Data')
+
+
+#Create hexbins for plots
+bin1 <- hexbin(prob4Data$depth, prob4Data$phosphate, xlab = 'Depth', ylab = 'Phosphate')
+plot(bin1)
+
+bin2 <- hexbin(prob4Data$block, prob4Data$phosphate, xlab = 'Block', ylab = 'Phosphate')
+plot(bin2)
+
+bin3 <- hexbin(prob4Data$block, prob4Data$depth, xlab = 'Block', ylab = 'Depth')
+plot(bin3)
+
+#Create a correlation lattice plot
+require(lattice)
+levelplot(cor(prob4Data))
+
+```
+Based on the summary statistics and the plots, this data does not appear to have any significant correlation, and the values of the points vary widely.  Utilizing the hexbin plots does show that some points have significant overlap with repeated values.  If I were doing research on this data, I would probably start by examining why some of the points in a few specific blocks had so much overlap while the rest of the blocks had their data spread over a large area.  The plot that I would focus on would be the hex plot of the phosphate and depth comparison.
