@@ -10,7 +10,6 @@ knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 library(tidyr)
 library(dplyr)
-
 ```
 # Problem 1
 I successfully completed the swirl lessons for this assignment.
@@ -132,7 +131,7 @@ for(i in 1:52){
     citycount[i] <- length(subset(cities$Abbreviation,cities$Abbreviation==abbreviation[i]))
 }
 
-knitr::kable(cbind.data.frame(statecode,citycount), caption="Number of Cities by State")
+knitr::kable(cbind.data.frame(abbreviation,citycount), caption="Number of Cities by State")
 
 
 #####I ran out of time to finish the rest of this problem with having to study for the regression exam.  I'm planning to finish it Wednesday.
