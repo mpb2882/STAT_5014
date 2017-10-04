@@ -1,0 +1,144 @@
+---
+title: "Homework 5 - Programming"
+author: "Matthew Blevins"
+date: "September 28, 2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+
+```
+# Problem 1
+I successfully completed the swirl lessons for this assignment.
+
+
+
+
+# Problem 2
+The file is created and in the correct place.
+
+
+
+
+
+# Problem 3
+There are several things that are important for showing data in a good figure.  First, it must be easy to read and understand without much explanation.  If it is too hard to understand, most people will not take the time to figure out what it represents.  It is also important for the correct type of figure to be selected depending on what kind of data is being portrayed.  There are many other important factors in creating a good figure, but many of them depend on the type of figure chosen.
+
+
+
+
+# Problem 4
+```{r, echo=F}
+set.seed(432432)
+#####Create a function to calculate the proportion of success
+proportionOfSuccess <- function(vec){
+#vec is the input vector
+    sum(vec)/length(vec)
+}
+
+###Create a matrix to simulate 10 coin flips with varying degrees of fairness
+p4bData <- matrix(rbinom(10, 1, prob = (30:40)/100), nrow = 10)
+
+#Apply function and observe what happens
+apply(p4bData, 2, proportionOfSuccess)
+apply(p4bData, 1, proportionOfSuccess)
+
+#Fix the above matrix by creating a probability function and a 10 x 10 matrix
+coinFlip <- function(p){
+    rbinom(10, 1, prob = p)
+}
+
+probabilities <- c(.30, .31, .32, .33, .34, .35, .36, .37, .38, .39)
+
+#Create a matrix with these probabilities
+coinFlipMatrix <- matrix(sapply(probabilities, coinFlip), nrow = 10, ncol = 10)
+coinFlipMatrix
+
+#Apply by row
+apply(coinFlipMatrix, 2, proportionOfSuccess)
+#Apply by column
+apply(coinFlipMatrix, 1, proportionOfSuccess)
+```
+
+#Problem 5
+```{r, echo=F}
+starchData <- read.table("http://www2.isye.gatech.edu/~jeffwu/book/data/starch.dat",
+                          header=T)
+
+summary(starchData)
+
+boxplot(strength ~ starch, starchData)
+
+boxplot(thickness ~ starch, starchData)
+
+pairs(starchData)
+cor(starchData$strength,starchData$thickness)
+
+qplot(thickness, strength, data=starchData, col=starch)
+
+g<-ggplot(starchData, aes(thickness, strength))
+g+geom_point()+geom_smooth(method="lm")+facet_grid(.~starch)
+
+
+```
+
+
+
+# Problem 6
+
+
+## Part A
+```{r, echo=F}
+
+ #we are grabbing a SQL set from here
+    # http://www.farinspace.com/wp-content/uploads/us_cities_and_states.zip
+
+    #download the files, looks like it is a .zip
+    library(downloader)
+    download("http://www.farinspace.com/wp-content/uploads/us_cities_and_states.zip",dest="us_cities_states.zip")
+    unzip("us_cities_states.zip", exdir ="./05_R_apply_family")
+    
+    #read in data, looks like sql dump, blah
+    library(data.table)
+    states <- fread(input = "./us_cities_and_states/states.sql",skip = 23,sep = "'", sep2 = ",", header = F, select = c(2,4))
+    ### YOU do the CITIES
+    ### I suggest the cities_extended.sql may have everything you need
+    ### can you figure out how to limit this to the 50?
+    
+
+#rename states columns 
+colnames(states)<-c("state","Abbreviation") 
+
+#read in cities 
+cities <- fread(input = "./us_cities_and_states/cities_extended.sql",skip = 19,sep = "'", sep2 = ",", header = F, select = c(2,4,6,8,10,12)) 
+
+
+#rename cities columns 
+colnames(cities) <- c("city","Abbreviation","zip","latitude","longitude","county") 
+
+
+#create vector of states 
+abbreviation <- as.vector(unique(cities$Abbreviation)) 
+
+
+#create vector of city counts by state 
+citycount<-c()
+
+for(i in 1:52){ 
+    citycount[i] <- length(subset(cities$Abbreviation,cities$Abbreviation==abbreviation[i]))
+}
+
+knitr::kable(cbind.data.frame(statecode,citycount), caption="Number of Cities by State")
+
+
+#####I ran out of time to finish the rest of this problem with having to study for the regression exam.  I'm planning to finish it Wednesday.
+```
+```
+
+
+# Problem 7
+If you are reading this, then the file was successfully pushed to github.
