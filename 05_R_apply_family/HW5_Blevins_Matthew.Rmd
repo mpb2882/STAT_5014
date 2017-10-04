@@ -42,9 +42,12 @@ proportionOfSuccess <- function(vec){
 ###Create a matrix to simulate 10 coin flips with varying degrees of fairness
 p4bData <- matrix(rbinom(10, 1, prob = (30:40)/100), nrow = 10)
 
+
 #Apply function and observe what happens
 apply(p4bData, 2, proportionOfSuccess)
 apply(p4bData, 1, proportionOfSuccess)
+
+#The matrix just computed the overall probability when doing it by columns, and it gave me a vector that is essentially just the Probability data transposed when doing it by column.
 
 #Fix the above matrix by creating a probability function and a 10 x 10 matrix
 coinFlip <- function(p){
@@ -68,12 +71,16 @@ apply(coinFlipMatrix, 1, proportionOfSuccess)
 starchData <- read.table("http://www2.isye.gatech.edu/~jeffwu/book/data/starch.dat",
                           header=T)
 
+#Begin by obtaining basic summary statistics of the data
 summary(starchData)
 
+#Plot a few boxplots to get an idea of the strength and thickness of the data
 boxplot(strength ~ starch, starchData)
 
 boxplot(thickness ~ starch, starchData)
 
+
+#Plot the information together to gather information about all of the variables together
 pairs(starchData)
 cor(starchData$strength,starchData$thickness)
 
