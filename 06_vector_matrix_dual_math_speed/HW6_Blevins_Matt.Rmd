@@ -17,9 +17,14 @@ If you are reading this, then the file has been created correctly.  :'( that the
 #### I had to change the length.out for this to work on my computer.  It kept saying it couldn't perform the operations because the vector size was too large. 
 set.seed(12345)
 y <- seq(from = 1, to = 100, length.out = 1e+04) + rnorm(1e+04)
-
+average <- mean(y)
+    
 #Create a for loop to calculate SST
-
+SSTloop <- 0
+for(i in 1:length(y)){
+    SST1 <- SSTloop + (y[i] + average)^2
+    SST1
+}     
 
 
 
@@ -35,8 +40,8 @@ J <- matrix(1, nrow = n, ncol = n)
 
 #Create SST using matrix multiplication
 SSTCen <- I - J/n
-system.time({SST <- yPrime%*%SSTCen%*%y})
-SST
+system.time({SST2 <- yPrime%*%SSTCen%*%y})
+SST2
 ```
 
 
@@ -46,10 +51,27 @@ set.seed(1256)
 theta <- as.matrix(c(1, 2), nrow = 2)
 X <- cbind(1, rep(1:10, 10))
 h <- X %*% theta + rnorm(100, 0, 0.2)
+m <- length(h)
+
+
+oldTheta <- as.matrix(rnorm(2, 0, 1), nrow = 2)
+alpha = 0.01
+tol = 10e-6
+
+
+#Run a loop to stop when the value stops changing within a reasonable limit
+system.time({
+while((abs(theta[1,1] - oldTheta[1,1]) & abs(theta[2,1] - oldTheta[2,1]))>tol) {   
+    theta[1,1] <- theta[1,1] - alpha * 1/m * sum((theta[1,1] + theta[2,1] * X[,2] - h))
+    theta[2,1] <- theta[2,1] - alpha * 1/m * sum((theta[1,1] + theta[2,1] * X[,2] - h) * X[,-2])
+}
+})
+
 
 #Get the results for lm for comparison
-lm(h~0+X)
-
+system.time({
+    lm(h~0+X)
+})
 
 
 ```
@@ -76,20 +98,30 @@ Instead of computing $(X'X)^{-1}$ It would be better to treat that inverse value
     r <- runif(15068,0,1)
     C<-NULL #save some memory space
     
-    Binverse <- solve(C[-id, -id])
-    system.time({
-        Binverse <- solve(B)
-        y <- (p + (A%*%Binverse %*% (q - r)))
+     #Calculate y
+     system.time({
+        y <- (p + (A%*%B^-1 %*% (q - r)))
         })
-#It took my computer 260 seconds to solve for y using the basic method given in the example
+     ## My computer did not have enough memory to make the vectors, so I had to make them smaller to run the code and see what would work.  With the smaller vector, it took 55 seconds to compute this way, but it only took 10 seconds to solve it like I have below.
+     
+     system.time({
+         t <- solve(B, q-r)
+         y <- p + A %*% t
+     })   
     
-    system.time({
-        pA <- p + A
-        qr <- q - r
-        Binverse <- solve(B)
-        speedY <- solve(B, pA %*% qr)
-    })
+    
 ```
+
+# Part a
+A is 112,347,208 bytes
+B is 1,816,357,192
+
+
+# Part b
+
+
+
+# Part c
 
 
 # Problem 6
